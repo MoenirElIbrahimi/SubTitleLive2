@@ -1,67 +1,94 @@
 <!DOCTYPE html>
-<html>
-  <body>
-    <p id="status">Connection status will go here</p>
-    <p id="transcript">Deepgram transcript will go here</p>
-    <p id="translated">Translated text will go here</p>
-    <script>
-      const translateText = async (text) => {
-        try {
-          const response = await fetch('https://api-free.deepl.com/v2/translate', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'Authorization': 'DEEPL_KEY'
-            },
-            body: new URLSearchParams({
-              text: text,
-              target_lang: 'NL',
-            })
-          });
-          const result = await response.json();
-          return result.translations[0].text;
-        } catch (error) {
-          console.error('Translation error:', error);
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeepL Translator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #transcript, #translated {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>DeepL Vertaling</h1>
+  <label for="speech-input">Spreek in het Spaans (real-time):</label>
+  <p id="status">Verbinden...</p>
+  <p id="transcript">Deepgram transcript komt hier...</p>
+  <p id="translated">Vertaalde tekst komt hier...</p>
+
+  <script>
+    // Deepgram WebSocket voor spraakherkenning
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      const mediaRecorder = new MediaRecorder(stream);
+      const socket = new WebSocket('wss://api.deepgram.com/v1/listen?language=nl', [
+        'token',
+        '',
+      ]);
+
+      socket.onopen = () => {
+        console.log({ event: 'onopen' });
+        document.querySelector('#status').textContent = 'Verbonden met Deepgram';
+        mediaRecorder.addEventListener('dataavailable', (event) => {
+          if (event.data.size > 0 && socket.readyState === 1) {
+            socket.send(event.data);
+          }
+        });
+        mediaRecorder.start(250);
+      };
+
+      socket.onmessage = async (message) => {
+        const received = JSON.parse(message.data);
+        const transcript = received.channel.alternatives[0].transcript;
+
+        if (transcript && received.is_final) {
+          document.querySelector('#transcript').textContent += transcript + ' ';
+          
+          // Vertaal de tekst met je backend
+          const translatedText = await translateText(transcript);
+          document.querySelector('#translated').textContent += translatedText + ' ';
         }
       };
 
-      navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-        const mediaRecorder = new MediaRecorder(stream);
-        const socket = new WebSocket('wss://api.deepgram.com/v1/listen?language=es', [
-          'token',
-          'DEEP_GRAM_KEY'
-        ]);
+      socket.onclose = () => {
+        console.log({ event: 'onclose' });
+        document.querySelector('#status').textContent = 'Verbinding verbroken.';
+      };
 
-        socket.onopen = () => {
-          console.log({ event: 'onopen' });
-          document.querySelector('#status').textContent = 'Connected';
-          mediaRecorder.addEventListener('dataavailable', (event) => {
-            if (event.data.size > 0 && socket.readyState === 1) {
-              socket.send(event.data);
-            }
-          });
-          mediaRecorder.start(250);
-        };
+      socket.onerror = (error) => {
+        console.log({ event: 'onerror', error });
+        document.querySelector('#status').textContent = 'Er is een fout opgetreden.';
+      };
+    });
 
-        socket.onmessage = async (message) => {
-          console.log({ event: 'onmessage', message });
-          const received = JSON.parse(message.data);
-          const transcript = received.channel.alternatives[0].transcript;
-          if (transcript && received.is_final) {
-            const translated = await translateText(transcript);
-            document.querySelector('#transcript').textContent += transcript + ' ';
-            document.querySelector('#translated').textContent += translated + ' ';
-          }
-        };
+    // Functie om tekst te vertalen via je backend
+    const translateText = async (text) => {
+      try {
+        const response = await fetch('http://localhost:3000/translate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text: text,
+            target_lang: 'en',
+          }),
+        });
 
-        socket.onclose = () => {
-          console.log({ event: 'onclose' });
-        };
-
-        socket.onerror = (error) => {
-          console.log({ event: 'onerror', error });
-        };
-      });
-    </script>
-  </body>
+        const result = await response.json();
+        return result.translations[0].text;
+      } catch (error) {
+        console.error('Translation error:', error);
+        return 'Fout bij vertaling.';
+      }
+    };
+  </script>
+</body>
 </html>
