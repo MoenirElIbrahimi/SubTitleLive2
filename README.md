@@ -20,4 +20,4 @@
    node index.js
    ```
 2. Open the index.html from files:
-   <img width="50">![image](https://github.com/user-attachments/assets/1440d462-83c5-4b38-85d5-850e68ee623e)</img>
+   <img width="50" scr="![image](https://github.com/user-attachments/assets/1440d462-83c5-4b38-85d5-850e68ee623e)" />
