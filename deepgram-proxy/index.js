@@ -24,17 +24,18 @@ app.post('/translate', async (req, res) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'DeepL-Auth-Key DEEPL_API_KEY ',
+        'Authorization': `DeepL-Auth-Key `,
       },
       body: new URLSearchParams({
         text: text,
         target_lang: target_lang,
       }),
     });
-
-    const data = await response.json();
-    console.log('Verstuurde data:', { text, target_lang });
-
+  
+    const responseText = await response.text(); 
+    console.log('Response van DeepL:', responseText);
+  
+    const data = JSON.parse(responseText); 
     if (response.ok) {
       res.json(data);
     } else {

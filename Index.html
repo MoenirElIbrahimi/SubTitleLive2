@@ -19,7 +19,7 @@
       const mediaRecorder = new MediaRecorder(stream);
       const socket = new WebSocket('wss://api.deepgram.com/v1/listen?language=nl', [
         'token',
-        'DEEP_GRAM_KEY',
+        '',
       ]);
 
       socket.onopen = () => {
@@ -67,7 +67,7 @@
           },
           body: JSON.stringify({
             text: text,
-            target_lang: 'en',
+            target_lang: 'EN',
           }),
         });
 
