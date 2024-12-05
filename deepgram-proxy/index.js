@@ -24,7 +24,7 @@ app.post('/translate', async (req, res) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'DeepL-Auth-Key ',
+        'Authorization': 'DeepL-Auth-Key DEEPL_API_KEY ',
       },
       body: new URLSearchParams({
         text: text,

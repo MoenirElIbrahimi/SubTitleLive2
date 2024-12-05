@@ -1,0 +1,82 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  h1 {
+    color: #1a1a1a;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 1rem;
+    color: #666;
+    font-size: 1.1rem;
+  }
+  
+  #status {
+    background-color: #e3f2fd;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    color: #1976d2;
+  }
+  
+  /* Large text blocks for transcript and translation */
+  #transcript, #translated {
+    width: 90%;
+    max-width: 800px;
+    min-height: 150px;
+    margin: 1rem auto;
+    padding: 2rem;
+    border-radius: 12px;
+    font-size: 2rem;
+    line-height: 1.4;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  #transcript {
+    background-color: #ffffff;
+    color: #2c3e50;
+    border-left: 6px solid #3498db;
+  }
+  
+  #translated {
+    background-color: #ffffff;
+    color: #2c3e50;
+    border-left: 6px solid #2ecc71;
+  }
+  
+  /* Latest sentence highlight effect */
+  #transcript:last-child, #translated:last-child {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    #transcript, #translated {
+      font-size: 1.5rem;
+      padding: 1.5rem;
+      min-height: 100px;
+    }
+  }
