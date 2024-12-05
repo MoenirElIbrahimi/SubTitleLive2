@@ -8,7 +8,7 @@
    ```
    cd deepgram-proxy
    npm init -y
-   npm install express body-parser cors node-fetch
+   npm install express body-parser cors node-fetch@2
    ```
 5. Change DEEP_GRAM_KEY to your Deepgram API key in index.html on line 22.
 6. Change DEEPL_API_KEY to your Deepl API key in index.js on line 27.
